@@ -16,6 +16,6 @@ class Payment_user(models.Model):
     paymentdate = models.DateField(auto_now=True)
     expirationdate = models.DateField()
 
-class expired_payments(models.Model):
+class Expired_payments(models.Model):
     pay_user_id = models.ForeignKey(Payment_user, on_delete = models.CASCADE)
     penalty_free_amount = models.DecimalField(max_digits=18, decimal_places=2)
