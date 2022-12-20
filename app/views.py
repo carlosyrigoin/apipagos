@@ -14,7 +14,7 @@ from .pagination import SimplePagination
 # Crud Services - ReadOnly
 
 class ServicesView(ReadOnlyModelViewSet):
-    #permission_classes = [IsAuthenticated, IsAdminUser]
+    permission_classes = [IsAuthenticated, IsAdminUser]
     queryset = Services.objects.all().order_by('-id')
     serializer_class = ServicesSerializer
     pagination_class = SimplePagination
@@ -24,7 +24,7 @@ class ServicesView(ReadOnlyModelViewSet):
 # Crud Payment_user
 
 class Payment_userView(ModelViewSet):
-    #permission_classes = [IsAuthenticated, IsAdminUser]
+    permission_classes = [IsAuthenticated, IsAdminUser]
     queryset = Payment_user.objects.all().order_by('-id')
     pagination_class = SimplePagination
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
@@ -99,7 +99,7 @@ class Payment_user_detailView(ModelViewSet):
 # Crud Expired_payments
 
 class Expired_paymentsView(ModelViewSet):
-    #permission_classes = [IsAuthenticated, IsAdminUser]
+    permission_classes = [IsAuthenticated, IsAdminUser]
     queryset = Expired_payments.objects.all().order_by('-id')
     pagination_class = SimplePagination
     throttle_scope = 'get'
