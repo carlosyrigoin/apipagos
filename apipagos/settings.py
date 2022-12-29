@@ -87,7 +87,7 @@ WSGI_APPLICATION = 'apipagos.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'apipagos',
+        'NAME': 'apipagos3',
         'USER': 'root',
         'PASSWORD': '',
         'HOST': '127.0.0.1',

@@ -14,17 +14,52 @@ from .pagination import SimplePagination
 # Crud Services - ReadOnly
 
 class ServicesView(ReadOnlyModelViewSet):
-    permission_classes = [IsAuthenticated, IsAdminUser]
+    permission_classes = [IsAuthenticated]
     queryset = Services.objects.all().order_by('-id')
     serializer_class = ServicesSerializer
     pagination_class = SimplePagination
     throttle_scope = 'get'
 
+class Services_createView(ModelViewSet):
+    permission_classes = [IsAdminUser]
+    throttle_scope = 'pagos'
+    
+    def create(self, request):
+        if isinstance(request.data, list):
+            serializer = ServicesSerializer(data=request.data, many = True)
+        else:
+            serializer = ServicesSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class Services_detailView(ModelViewSet):
+    permission_classes = [IsAdminUser]
+    queryset = Services.objects.all()
+    throttle_scope = 'pagos'
+
+    def retrieve(self, request, pk=None):
+        service = get_object_or_404(self.queryset, pk=pk)
+        serializer = ServicesSerializer(service)
+        return Response(serializer.data)
+
+    def update(self, request, pk=None):
+        service = get_object_or_404(self.queryset, pk=pk)
+        serializer = ServicesSerializer(service, data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 # Crud Payment_user
 
 class Payment_userView(ModelViewSet):
-    permission_classes = [IsAuthenticated, IsAdminUser]
+    permission_classes = [IsAuthenticated]
     queryset = Payment_user.objects.all().order_by('-id')
     pagination_class = SimplePagination
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
@@ -36,12 +71,19 @@ class Payment_userView(ModelViewSet):
         return Payment_userSerializer
 
     def list(self, request):
-        payments_users = Payment_user.objects.filter(paymentdate__gte = F("expirationdate"))
+        payments_users = Payment_user.objects.filter(paymentdate__gte = F("expirationdate"), expired = 0)
         for i in payments_users:
             data = {"pay_user_id":i.id, "penalty_free_amount":0}
             serializer = Expired_paymentsSerializer(data=data)
             if serializer.is_valid():
                 serializer.save()
+
+            data = {"expired":1}
+            payment_user = get_object_or_404(self.queryset, pk=i.id)
+            serializer = Payment_userSerializer(payment_user, data=data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+            
 
         page = self.paginate_queryset(self.queryset)
         if page is not None:
@@ -99,7 +141,7 @@ class Payment_user_detailView(ModelViewSet):
 # Crud Expired_payments
 
 class Expired_paymentsView(ModelViewSet):
-    permission_classes = [IsAuthenticated, IsAdminUser]
+    permission_classes = [IsAuthenticated]
     queryset = Expired_payments.objects.all().order_by('-id')
     pagination_class = SimplePagination
     throttle_scope = 'get'

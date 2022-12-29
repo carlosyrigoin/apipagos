@@ -35,7 +35,7 @@ class LoginView(APIView):
         if user is not None:
             tokens = create_jwt_pair_for_user(user)
 
-            response = {"message": "Logeado correctamente", "email": email ,"tokens": tokens}
+            response = {"message": "Logeado correctamente", "email": email, "id": user.id, "username": user.username, "superuser": user.is_superuser, "tokens": tokens}
             return Response(data=response, status=status.HTTP_200_OK)
         else:
             return Response(data={"message": "Correo inválido o contraseña incorrecta"})

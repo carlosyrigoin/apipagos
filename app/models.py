@@ -13,8 +13,9 @@ class Payment_user(models.Model):
     user_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.CASCADE)
     service_id = models.ForeignKey(Services, on_delete = models.CASCADE)
     amount = models.DecimalField(max_digits=18, decimal_places=2)
-    paymentdate = models.DateField()
+    paymentdate = models.DateField(auto_now_add=True)
     expirationdate = models.DateField()
+    expired = models.IntegerField(default=0)
 
 class Expired_payments(models.Model):
     pay_user_id = models.ForeignKey(Payment_user, on_delete = models.CASCADE)
